@@ -1,0 +1,16 @@
+{% load static %}
+{% load socialaccount %}
+<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+<div class="navbar">
+    <a href="{% url 'users:home' %}" id="homeLink">Home</a>
+    <a href="{% url 'users:study_spots' %}" id="studySpotsLink">View Study Spots</a>
+    <a href="{% url 'users:add_study_spot' %}" id="addStudySpotLink">Add Study Spot</a>
+    <a href="{% url 'users:map' %}" id="mapLink">Map</a>
+    {% if user.is_superuser %}
+        <a href="{% url 'users:approve_spots' %}" id="studySpotsLink">Approve Study Spots</a>
+    {% endif %}
+</div>

@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/approve_spots.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3-3.2-dist/css/bootstrap.css' %}">
+</head>
+<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+{% load static %}
+{% include 'navbar.html' %}
+
+{% if user.is_superuser %}
+    <!-- Study Spots -->
+    <h2 class="study-spots-header">Study Spots</h2>
+    <div class="study-spots-container">
+        <ul style="font-family: 'Georgia', serif;">
+            {% for spot in latest_study_spots %}
+                {% if not spot.approved %}
+                <li class="study-spot">
+                    <span style="color: #003366;">{{ spot.building_name }} - Posted by: {{ spot.user_posted.username }}</span>
+                    <p style="color: #003366;">Notes: {{ spot.notes }}</p>
+                    <form method="post">
+                        <!-- Approve -->
+                        {% csrf_token %}
+                        <input type="hidden" name="study_spot_id" value="{{ spot.id }}">
+                        <input type="hidden" name="action" value="approve">
+                        <button type="submit">Approve</button>
+                    </form>
+                    <form method="post">
+                        <!-- Delete -->
+                        {% csrf_token %}
+                        <input type="hidden" name="study_spot_id" value="{{ spot.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+<h1> Only admins can see this page. </h1>
+{% endif %}

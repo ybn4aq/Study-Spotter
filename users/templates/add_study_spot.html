@@ -1,0 +1,151 @@
+{% load static %}
+<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Study Spot</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3-3.2-dist/css/bootstrap.css' %}">
+    <style>
+        #map { width: 100%; height: 400px; }
+        .form-section { margin-bottom: 1rem; }
+        .form-label {
+            font-size: 1.2em; /* Increase font size */
+            font-weight: bold; /* Make text bold */
+            color: #0056b3; /* Change color for visibility */
+            margin-bottom: 0.5rem;
+        }
+        .submit-btn-container {
+            text-align: center; /* Center the button */
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+{% if not user.is_authenticated %}
+    {% include 'user_not_logged_in.html' %}
+{% else %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Create New Study Spot</h2>
+        <form method="post" class="shadow p-4 rounded bg-light">
+            {% csrf_token %}
+            <div class="form-section">
+                <label for="building_name" class="form-label">Study Spot Location:</label>
+                <input type="text" id="building_name" name="building_name" class="form-control">
+            </div>
+            <div class="form-section">
+                <input id="pac-input" class="form-control" type="text" placeholder="Search Box">
+            </div>
+            <div class="form-section">
+                <div id="map"></div>
+            </div>
+            {% include "alt_map.html" with locations=locations lat_default=lat_default lng_default=lng_default solo=solo spot_name=spot_name %}
+            <div class="form-section d-flex justify-content-between">
+                <div class="me-2">
+                    <label for="latitude" class="form-label">Latitude:</label>
+                    <input type="number" step="0.000000000000001" id="latitude" name="latitude" class="form-control"/>
+                </div>
+                <div class="ms-2">
+                    <label for="longitude" class="form-label">Longitude:</label>
+                    <input type="number" step="0.000000000000001" id="longitude" name="longitude" class="form-control"/>
+                </div>
+            </div>
+            <div class="form-section">
+                <label for="notes" class="form-label">Notes:</label>
+                <textarea id="notes" name="notes" class="form-control" rows="8"></textarea>
+            </div>
+            <div class="submit-btn-container">
+                <button type="submit" onclick="displayMessage(event)">Submit</button>
+            <p id="message" style="font-size: 20px;"></p>
+            
+            <style>
+                .error-message {
+                    color: red;
+                    font-weight: bold;
+                    text-shadow: 0 0 10px red;
+                    animation: soften 2s forwards;
+                }
+
+                @keyframes soften {
+                    0% {
+                        text-shadow: 0 0 10px red;
+                    }
+            
+                    90% {
+                        text-shadow: 0 0 5px red;
+                    }
+            
+                    100% {
+                        text-shadow: none;
+                        color: inherit;
+                    }
+                }
+                    button[type="submit"] {
+                        padding: 10px 20px;
+                        background: #007bff;
+                        color: white;
+                        border: 0;
+                        border-radius: 5px;
+                        font-size: 1.1em;
+                        cursor: pointer;
+                        transition: background 0.3s, box-shadow 0.2s;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                    }
+
+                    button[type="submit"]:hover {
+                        background: #0056b3;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                    }
+
+            </style>
+            <script>
+                function displayMessage(e) {
+                    e.preventDefault();
+                    var messageElement = document.getElementById("message");
+                    var buildingName = document.getElementById("building_name").value.trim();
+                    var latitude = document.getElementById("latitude").value.trim();
+                    var longitude = document.getElementById("longitude").value.trim();
+            
+                    if (!buildingName || !latitude || !longitude) {
+                        messageElement.innerHTML = "The spot name and a Google Map pin are required.";
+                        messageElement.classList.add("error-message");
+                        messageElement.style.animation = 'none';
+                        messageElement.offsetWidth;
+                        messageElement.style.animation = null;
+
+                    } else if (latitude < lat_default - 0.015 || latitude > lat_default + 0.015 || longitude < lng_default - 0.02 || longitude > lng_default + 0.02) {
+                        messageElement.innerHTML = "The location must be on or near the Grounds.";
+                        messageElement.classList.add("error-message");
+                        messageElement.style.animation = 'none';
+                        messageElement.offsetWidth;
+                        messageElement.style.animation = null;
+
+                    } else {
+                        messageElement.innerHTML = "Your study spot is now pending approval. Please wait to be redirected.";
+                        messageElement.classList.remove("error-message");
+                        setTimeout(function () {
+                            messageElement.innerHTML = "";
+                            e.target.form.submit();
+                        }, 1500);
+                    }
+                    /*
+                    REFERENCES
+                    Title: Restart animation in CSS3: any better way than removing the element?
+                    Author: "user" [sic] on Stack Overflow
+                    URL: https://stackoverflow.com/questions/6268508/restart-animation-in-css3-any-better-way-than-removing-the-element
+
+                    Used Chat-GPT Version 3.5 to assist with CSS Stlying for making error text play glowing animation
+            */
+                }
+            </script>
+            </div>
+        </form>
+    </div>
+    <script src="{% static 'bootstrap-5.3-3.2-dist/js/bootstrap.js' %}"></script>
+</body>
+{% endif %}
+</html>
+
+

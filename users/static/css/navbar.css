@@ -1,0 +1,24 @@
+.navbar {
+    background-color: #fac33d; /* A shade of blue for a professional look */
+    overflow: hidden;
+    padding: 10px 0;
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    font-size: 1em; /* Adjust size as needed */
+    font-family: Arial, sans-serif;
+}
+
+.navbar a:hover, .navbar a:focus {
+    background-color: #3650ee; /* A darker shade of blue for hover state */
+    color: #fff;
+    text-decoration: none; /* No underline on hover */
+}
+

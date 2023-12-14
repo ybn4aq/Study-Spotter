@@ -1,0 +1,61 @@
+/* main.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.study-spots-header {
+    font-family: 'Georgia', serif;
+    color: #fafafa;
+    background-color: #ffae21; /* A green shade for a positive action context */
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.study-spots-container {
+    max-width: 800px; /* Adjust based on layout */
+    margin: auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li.study-spot {
+    background-color: #e9e9e9;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: #003366;
+    font-family: 'Georgia', serif;
+}
+
+li.study-spot span, li.study-spot p {
+    display: block; /* makes elements stack vertically */
+    margin-bottom: 10px; /* adds space between elements */
+}
+
+button[type="submit"]:last-child {
+    background-color: #2586e7; /* Delete button in red */
+}
+
+button[type="submit"]:last-child:hover {
+    background-color: #c9302c; /* Darken button on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .study-spots-container {
+        padding: 10px;
+    }
+}

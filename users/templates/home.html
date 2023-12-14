@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Spotter</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3-3.2-dist/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+<body>
+    {% load static %}
+    {% load socialaccount %}
+    {% if user.is_authenticated %}
+        {% include 'navbar.html' %}
+    {% else %}
+        <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    {% endif %}
+
+    <div id="homeContent" class="container">
+        {% if user.is_authenticated %}
+            <!-- User Info -->
+            <div class="user-info content-box">
+                <p>Successfully signed in as <span>{{ user.get_full_name }}</span>.</p>
+                <p>You have a very nice email: <span>{{ user.socialaccount_set.all.0.extra_data.email }}</span>.</p>
+                <a href="logout" class="logout-link">Logout</a>
+            </div>
+        {% else %}
+            <h2>Google Login</h2>
+            <a href="{% provider_login_url 'google' %}?next=/">Login With Google</a>
+        {% endif %}
+    </div>
+
+    <div id="miniSpot" class="container content-box">
+        <h1>Students love studying at...</h1>
+        {% include 'mini_spot_view.html' with spot=spot %}
+        <img src="{% static 'image/UVAimage.jpeg' %}" alt="UVA Campus" class="uva-image" style="width: 100%; height: auto; display: block; margin-bottom: 10px;">
+    </div>
+
+
+
+    <script src="{% static 'bootstrap-5.3-3.2-dist/js/bootstrap.js' %}"></script>
+</body>
+</html>
+
+
+

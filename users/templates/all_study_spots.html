@@ -1,0 +1,63 @@
+{% load static %}
+<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+<!-- ALL STUDY SPOT VIEW -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Spotter</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3-3.2-dist/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all_study_spot.css' %}">
+</head>
+
+{% if not user.is_authenticated %}
+    {% include 'user_not_logged_in.html' %}
+{% else %}
+{% include 'navbar.html' %}
+    <body>
+            <!-- Study Spots -->
+            <h2 class="study-spots-header">Study Spots</h2>
+            <div class="study-spots-container">
+                <ul style="font-family: 'Georgia', serif;">
+                    {% for spot in all_study_spots %}
+                        {% if spot.approved %}
+                        <li class="study-spot">
+                            <a style="color: #003366;" href="{% url 'users:spot' pk=spot.pk %}">{{ spot.building_name }} - Posted by: {{ spot.user_posted.username }}</a>
+                            <p style="color: #003366;"> Notes: {{ spot.notes }}</p>
+                            <p style="color: #003366;"> Likes: {{ spot.likes }}</p>
+                            {% for k, v in user_has_liked.items %}
+                                {% if k == spot.pk %}
+                                    {% if v %}
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="study_spot_id" value="{{ spot.id }}">
+                                            <input type="hidden" name="action" value="unlike">
+                                            <button type="submit"> Unlike </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="study_spot_id" value="{{ spot.id }}">
+                                            <input type="hidden" name="action" value="like">
+                                            <button type="submit"> Like </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if is_user_admin %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="study_spot_id" value="{{ spot.id }}">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+<script src="{% static 'bootstrap-5.3-3.2-dist/js/bootstrap.js' %}"></script>
+</body>
+{% endif %}
+</html>

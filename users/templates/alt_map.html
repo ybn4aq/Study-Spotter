@@ -1,0 +1,185 @@
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuus42fF7xvjCYjS2Vc4g3BX1anfZRsEU&libraries=places"></script>
+<script defer>
+let map;
+let markers = [];
+let marker;
+let infoWindows = [];
+var locations = {{ locations|safe }};
+var lat_default = {{ lat_default|safe }};
+var lng_default = {{ lng_default|safe }};
+var solo = {{ solo|safe }};
+var spot_name = "{{ spot_name|safe }}";
+var user;
+
+function initMap() {
+    console.log(locations);
+  const position1 = { lat: lat_default, lng: lng_default };
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 16,
+    center: position1,
+  });
+
+  map.addListener("click", function (mapsMouseEvent) {
+    if (!solo) {
+      const latLng = mapsMouseEvent.latLng;
+      const lat = latLng.lat();
+      const lng = latLng.lng();
+
+      // Remove the existing marker if one exists
+      if (marker) {
+          marker.setMap(null);
+      }
+
+      // Create a new marker at the clicked position
+      marker = new google.maps.Marker({
+          position: latLng,
+          map: map,
+          title: "New Marker",
+          icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+      });
+      markers.push(marker);
+
+      document.getElementById("latitude").value = lat;
+      document.getElementById("longitude").value = lng;
+  }
+  });
+
+  locations.forEach(function (location) {
+    var markerIcon;
+    if (solo && location.name === spot_name) {
+        markerIcon = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+    }
+    else {
+      markerIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+    }
+    var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(location.lat, location.long),
+      map: map,
+      title: location.name,
+      icon: markerIcon,
+    });
+
+    var contentString =
+      '<div id="content">' +
+      "<strong>" +
+      location.name +
+      "</strong><br>" +
+      "<strong>" +
+      "Likes: " +
+      location.likes +
+      "</strong><br>" +
+      '<a href="' +
+      location.url +
+      '">Visit Page</a>' +
+      "</div>";
+
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString,
+    });
+
+    infoWindows.push(infowindow);
+    if (solo && location.name === spot_name ) { infowindow.open(map, marker); }
+
+    marker.addListener("click", function () {
+      infoWindows.forEach(function (iw) {
+        iw.close();
+      });
+
+      infowindow.open(map, marker);
+    });
+
+    markers.push(marker);
+  });
+
+  const input = document.getElementById("pac-input");
+  const searchBox = new google.maps.places.SearchBox(input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+  searchBox.addListener("places_changed", () => {
+    const places = searchBox.getPlaces();
+
+    if (places.length === 0) {
+      return;
+    }
+
+    // Remove the existing marker if one exists
+    if (marker) {
+      marker.setMap(null);
+    }
+
+    // Create a new marker at the selected place
+    marker = new google.maps.Marker({
+      map: map,
+      title: places[0].name,
+      position: places[0].geometry.location,
+    });
+
+    const lat = places[0].geometry.location.lat();
+    const lng = places[0].geometry.location.lng();
+
+    document.getElementById("latitude").value = lat;
+    document.getElementById("longitude").value = lng;
+
+    map.setCenter(places[0].geometry.location);
+  });
+
+  if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const userPos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+            };
+
+            if (solo) {
+                const userCircle = new google.maps.Circle({
+                    strokeColor: '#0000FF',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#0000FF',
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: userPos,
+                    radius: 15,
+                });
+
+
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({
+                suppressMarkers: true,
+            });
+            directionsRenderer.setMap(map);
+
+            const request = {
+                origin: userPos,
+                destination: { lat: lat_default, lng: lng_default },
+                travelMode: google.maps.TravelMode.DRIVING,
+            };
+
+            directionsService.route(request, function (result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                }
+            });
+        }
+    });
+    }
+}
+
+initMap();
+window.initMap = initMap;
+
+/*
+  REFERENCES
+  Title: How to Build a Javascript Google Map Directions API & Places API Project
+  Author: Sam Codes
+  Date: Mar 19, 2021
+  URL: https://www.youtube.com/watch?v=BkGtNBrOhKU
+
+  Title: Geolocation: Displaying User or Device Position on Maps
+  Author: Google Maps Platform
+  URL: https://developers.google.com/maps/documentation/javascript/geolocation
+*/
+</script>
