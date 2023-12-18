@@ -1,5 +1,7 @@
 # **Study Spotter at UVA**
 
+Website is live at: https://study-spotter-3240-46300aa8febd.herokuapp.com/
+
 ## **Contributors** 
 （in alphabetical order）
 - **Bijan** (`bab6tac`)
